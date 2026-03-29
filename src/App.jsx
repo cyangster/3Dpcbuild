@@ -22,7 +22,8 @@ export default function App() {
         <div className="header-inner">
           <h1 className="title">Interactive 3D PC</h1>
           <p className="subtitle">
-            Click parts in the view or use the list. Drag to orbit, scroll to zoom.
+            Tap a part in the 3D view or choose from the list. Drag with one finger to rotate;
+            pinch to zoom. On a keyboard, drag to orbit and scroll to zoom.
           </p>
         </div>
       </header>
@@ -51,8 +52,8 @@ export default function App() {
                       type="button"
                       className={`part-btn${active ? " part-btn--active" : ""}${hover && !active ? " part-btn--hover" : ""}`}
                       onClick={() => setSelectedId(id)}
-                      onMouseEnter={() => setHoveredId(id)}
-                      onMouseLeave={() => setHoveredId(null)}
+                      onPointerEnter={() => setHoveredId(id)}
+                      onPointerLeave={() => setHoveredId(null)}
                     >
                       <span className="part-btn-label">{part.label}</span>
                       <span className="part-btn-short">{part.short}</span>
