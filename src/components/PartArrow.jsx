@@ -1,14 +1,17 @@
-import { useRef, useLayoutEffect, useEffect } from "react";
+import { useRef, useLayoutEffect, useEffect, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
-const RED = "#dc2626";
-const RED_BRIGHT = "#ef4444";
-const RED_DEEP = "#991b1b";
+/** Resting arrow — deep red */
+const IDLE = { color: "#b91c1c", emissive: "#7f1d1d", emissiveIntensity: 0.12 };
+/** Pointer or sidebar hover — clearly different warm amber/orange */
+const HOVER = { color: "#f59e0b", emissive: "#c2410c", emissiveIntensity: 0.55 };
+/** Selected / active part */
+const ACTIVE = { color: "#fca5a5", emissive: "#b91c1c", emissiveIntensity: 0.65 };
 
 /**
  * Clickable indicator pointing at a part that is hard to see or hit (e.g. CPU under a cooler).
- * `position` and `lookAt` are in the same local space as the parent group (PC case group).
+ * Hover (pointer on arrow or same part highlighted in the sidebar) uses a distinct orange shade.
  */
 export function PartArrow({
   partId,
@@ -42,12 +45,26 @@ export function PartArrow({
   useFrame(({ clock }) => {
     const p = pulseRef.current;
     if (!p) return;
-    const s = 1 + Math.sin(clock.elapsedTime * 2.8) * 0.07;
+    const active = selectedId === partId;
+    const hover = hoveredId === partId && !active;
+    const amp = hover ? 0.11 : active ? 0.09 : 0.07;
+    const s = 1 + Math.sin(clock.elapsedTime * 2.8) * amp;
     p.scale.setScalar(s);
   });
 
   const active = selectedId === partId;
-  const hover = hoveredId === partId;
+  const hover = hoveredId === partId && !active;
+
+  const matProps = useMemo(() => {
+    const src = active ? ACTIVE : hover ? HOVER : IDLE;
+    return {
+      color: src.color,
+      emissive: src.emissive,
+      emissiveIntensity: src.emissiveIntensity,
+      metalness: hover ? 0.35 : active ? 0.2 : 0.22,
+      roughness: hover ? 0.38 : active ? 0.42 : 0.48,
+    };
+  }, [active, hover]);
 
   const setPointer = (down) => {
     document.body.style.cursor = down ? "pointer" : "auto";
@@ -70,18 +87,9 @@ export function PartArrow({
     setPointer(false);
   };
 
-  const matProps = {
-    color: active || hover ? RED_BRIGHT : RED,
-    emissive: RED_DEEP,
-    emissiveIntensity: active ? 0.45 : hover ? 0.28 : 0.15,
-    metalness: 0.25,
-    roughness: 0.45,
-  };
-
   return (
     <group ref={orientRef}>
       <group ref={pulseRef} rotation={[0, Math.PI, 0]}>
-        {/* Single hit target so hover/click don’t flicker across child meshes */}
         <mesh position={[0, 0, 0.1]} onClick={onPick} onPointerOver={onOver} onPointerOut={onOut}>
           <sphereGeometry args={[0.095, 20, 20]} />
           <meshBasicMaterial transparent opacity={0} depthWrite={false} />
@@ -104,7 +112,7 @@ export function PartArrow({
           castShadow
         >
           <coneGeometry args={[0.038, 0.095, 16]} />
-          <meshStandardMaterial {...matProps} metalness={0.2} roughness={0.4} />
+          <meshStandardMaterial {...matProps} metalness={matProps.metalness * 0.85} roughness={matProps.roughness * 0.92} />
         </mesh>
       </group>
     </group>
