@@ -1,8 +1,7 @@
 import { useMemo, useRef } from "react";
+import { HOVER, SELECTION } from "../theme/selectionHighlight.js";
 
 const baseColor = "#2a3344";
-const hoverColor = "#3d8bfd";
-const selectedColor = "#5cb3ff";
 
 export function ClickablePart({
   partId,
@@ -24,16 +23,20 @@ export function ClickablePart({
   const isHovered = hoveredId === partId && !isSelected;
 
   const emissive = useMemo(() => {
-    if (isSelected) return "#1a3a5c";
-    if (isHovered) return "#0f2844";
+    if (isSelected) return SELECTION.emissive;
+    if (isHovered) return HOVER.emissive;
     return "#000000";
   }, [isSelected, isHovered]);
 
   const surfaceColor = useMemo(() => {
-    if (isSelected) return selectedColor;
-    if (isHovered) return hoverColor;
+    if (isSelected) return SELECTION.surface;
+    if (isHovered) return HOVER.surface;
     return color;
   }, [isSelected, isHovered, color]);
+
+  const metal = isSelected ? SELECTION.metalnessSelected : isHovered ? 0.32 : metalness;
+  const rough = isSelected ? SELECTION.roughnessSelected : isHovered ? 0.48 : roughness;
+  const emissiveIntensity = isSelected ? SELECTION.emissiveIntensity : isHovered ? HOVER.emissiveIntensity : 0;
 
   return (
     <mesh
@@ -61,10 +64,10 @@ export function ClickablePart({
       <boxGeometry args={args} />
       <meshStandardMaterial
         color={surfaceColor}
-        metalness={metalness}
-        roughness={roughness}
+        metalness={metal}
+        roughness={rough}
         emissive={emissive}
-        emissiveIntensity={isSelected ? 0.35 : isHovered ? 0.2 : 0}
+        emissiveIntensity={emissiveIntensity}
         transparent={transparent}
         opacity={opacity}
       />

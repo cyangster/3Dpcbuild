@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { RoundedBox } from "@react-three/drei";
+import { HOVER, SELECTION } from "../theme/selectionHighlight.js";
 
 export function ClickableRoundedBox({
   partId,
@@ -21,15 +22,27 @@ export function ClickableRoundedBox({
   const isSelected = selectedId === partId;
   const isHovered = hoveredId === partId && !isSelected;
 
-  const { surfaceColor, emissive, emissiveIntensity } = useMemo(() => {
+  const { surfaceColor, emissive, emissiveIntensity, metal, rough } = useMemo(() => {
     if (isSelected) {
-      return { surfaceColor: "#5cb3ff", emissive: "#1a3a5c", emissiveIntensity: 0.35 };
+      return {
+        surfaceColor: SELECTION.surface,
+        emissive: SELECTION.emissive,
+        emissiveIntensity: SELECTION.emissiveIntensity,
+        metal: SELECTION.metalnessSelected,
+        rough: SELECTION.roughnessSelected,
+      };
     }
     if (isHovered) {
-      return { surfaceColor: "#3d8bfd", emissive: "#0f2844", emissiveIntensity: 0.2 };
+      return {
+        surfaceColor: HOVER.surface,
+        emissive: HOVER.emissive,
+        emissiveIntensity: HOVER.emissiveIntensity,
+        metal: 0.32,
+        rough: 0.48,
+      };
     }
-    return { surfaceColor: color, emissive: "#000000", emissiveIntensity: 0 };
-  }, [isSelected, isHovered, color]);
+    return { surfaceColor: color, emissive: "#000000", emissiveIntensity: 0, metal: metalness, rough: roughness };
+  }, [isSelected, isHovered, color, metalness, roughness]);
 
   return (
     <RoundedBox
@@ -58,8 +71,8 @@ export function ClickableRoundedBox({
     >
       <meshStandardMaterial
         color={surfaceColor}
-        metalness={metalness}
-        roughness={roughness}
+        metalness={metal}
+        roughness={rough}
         emissive={emissive}
         emissiveIntensity={emissiveIntensity}
         transparent={transparent}

@@ -3,6 +3,7 @@ import { RoundedBox } from "@react-three/drei";
 import { ClickablePart } from "./ClickablePart";
 import { ClickableRoundedBox } from "./ClickableRoundedBox";
 import { PartArrow } from "./PartArrow";
+import { HOVER, SELECTION } from "../theme/selectionHighlight.js";
 
 function NoRaycastGroup({ children }) {
   const ref = useRef(null);
@@ -239,11 +240,23 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
         <mesh position={[0, 0.448, 0.138]} castShadow>
           <boxGeometry args={[0.28, 0.028, 0.014]} />
           <meshStandardMaterial
-            color={selectedId === "gpu" || hoveredId === "gpu" ? "#7dd3fc" : "#3b82f6"}
-            emissive="#1e3a5f"
-            emissiveIntensity={selectedId === "gpu" ? 0.5 : hoveredId === "gpu" ? 0.35 : 0.28}
-            metalness={0.35}
-            roughness={0.4}
+            color={
+              selectedId === "gpu"
+                ? SELECTION.surface
+                : hoveredId === "gpu"
+                  ? HOVER.surface
+                  : "#3b82f6"
+            }
+            emissive={selectedId === "gpu" ? SELECTION.emissive : hoveredId === "gpu" ? HOVER.emissive : "#1e3a5f"}
+            emissiveIntensity={
+              selectedId === "gpu"
+                ? SELECTION.emissiveIntensity
+                : hoveredId === "gpu"
+                  ? HOVER.emissiveIntensity
+                  : 0.28
+            }
+            metalness={selectedId === "gpu" ? SELECTION.metalnessSelected : 0.35}
+            roughness={selectedId === "gpu" ? SELECTION.roughnessSelected : 0.4}
           />
         </mesh>
         <GpuFanVisual position={[-0.1, 0.42, 0.132]} scale={0.92} />

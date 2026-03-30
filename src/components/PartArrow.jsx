@@ -6,8 +6,8 @@ import * as THREE from "three";
 const IDLE = { color: "#b91c1c", emissive: "#7f1d1d", emissiveIntensity: 0.12 };
 /** Pointer or sidebar hover — clearly different warm amber/orange */
 const HOVER = { color: "#f59e0b", emissive: "#c2410c", emissiveIntensity: 0.55 };
-/** Selected / active part */
-const ACTIVE = { color: "#fca5a5", emissive: "#b91c1c", emissiveIntensity: 0.65 };
+/** Selected from sidebar / scene — matches 3D part cyan highlight */
+const ACTIVE = { color: "#7dd3fc", emissive: "#0369a1", emissiveIntensity: 0.78 };
 
 /**
  * Clickable indicator pointing at a part that is hard to see or hit (e.g. CPU under a cooler).
