@@ -18,12 +18,12 @@ export const CAMERA_BY_PART = {
     position: [0.62, 0.5, 0.52],
   },
   cpu: {
-    target: [-0.06, 0.48, -0.14],
-    position: [0.78, 0.72, 1.08],
+    target: [-0.065, 0.52, -0.13],
+    position: [0.52, 0.64, 0.72],
   },
   cooler: {
-    target: [-0.05, 0.54, -0.15],
-    position: [0.52, 0.58, 0.36],
+    target: [-0.05, 0.58, -0.14],
+    position: [0.48, 0.62, 0.58],
   },
   ram: {
     target: [0.14, 0.43, -0.15],
@@ -34,16 +34,16 @@ export const CAMERA_BY_PART = {
     position: [0.48, 0.36, 0.92],
   },
   storage: {
-    target: [0.09, 0.27, -0.12],
-    position: [-0.72, 0.62, 1.12],
+    target: [0.12, 0.47, -0.15],
+    position: [-0.38, 0.55, 0.58],
   },
   psu: {
     target: [0, 0.08, -0.07],
     position: [0.98, 0.42, 0.82],
   },
   fans: {
-    target: [0, 0.58, 0.2],
-    position: [0.18, 0.54, 0.95],
+    target: [0, 0.6, 0.22],
+    position: [0.12, 0.52, 0.88],
   },
 };
 

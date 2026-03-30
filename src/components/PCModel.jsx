@@ -18,22 +18,74 @@ function NoRaycastGroup({ children }) {
   return <group ref={ref}>{children}</group>;
 }
 
-/** 120 mm–style fan facing +Z (toward viewer when mounted on front panel). */
-function CaseFanVisual({ position, scale = 1 }) {
+/** emphasis: idle | hover | selected — cyan glow for sidebar / click feedback */
+function fanEmphasisMat(emphasis, baseRing, baseHub, baseBlade) {
+  if (emphasis === "selected") {
+    return {
+      ring: { color: SELECTION.surface, emissive: SELECTION.emissive, emissiveIntensity: SELECTION.emissiveIntensity, metalness: SELECTION.metalnessSelected, roughness: SELECTION.roughnessSelected },
+      hub: { color: "#38bdf8", emissive: SELECTION.emissive, emissiveIntensity: 0.5, metalness: 0.4, roughness: 0.42 },
+      blade: { color: "#7dd3fc", emissive: "#0369a1", emissiveIntensity: 0.35, metalness: 0.3, roughness: 0.5 },
+    };
+  }
+  if (emphasis === "hover") {
+    return {
+      ring: { color: HOVER.surface, emissive: HOVER.emissive, emissiveIntensity: HOVER.emissiveIntensity, metalness: 0.38, roughness: 0.45 },
+      hub: { color: "#60a5fa", emissive: HOVER.emissive, emissiveIntensity: 0.32, metalness: 0.35, roughness: 0.46 },
+      blade: { color: "#93c5fd", emissive: "#1d4ed8", emissiveIntensity: 0.22, metalness: 0.28, roughness: 0.52 },
+    };
+  }
+  return {
+    ring: { color: baseRing, emissive: "#000000", emissiveIntensity: 0, metalness: 0.45, roughness: 0.42 },
+    hub: { color: baseHub, emissive: "#000000", emissiveIntensity: 0, metalness: 0.35, roughness: 0.48 },
+    blade: { color: baseBlade, emissive: "#000000", emissiveIntensity: 0, metalness: 0.25, roughness: 0.55 },
+  };
+}
+
+function partEmphasis(partId, selectedId, hoveredId) {
+  if (selectedId === partId) return "selected";
+  if (hoveredId === partId) return "hover";
+  return "idle";
+}
+
+function coolerStackMat(emphasis) {
+  if (emphasis === "selected") {
+    return {
+      fin: { color: SELECTION.surface, emissive: SELECTION.emissive, emissiveIntensity: 0.55, metalness: 0.3, roughness: 0.46 },
+      pipe: { color: "#bae6fd", emissive: SELECTION.emissive, emissiveIntensity: 0.4, metalness: 0.7, roughness: 0.3 },
+      base: { color: "#7dd3fc", emissive: SELECTION.emissive, emissiveIntensity: 0.45, metalness: 0.5, roughness: 0.42 },
+    };
+  }
+  if (emphasis === "hover") {
+    return {
+      fin: { color: HOVER.surface, emissive: HOVER.emissive, emissiveIntensity: 0.32, metalness: 0.32, roughness: 0.5 },
+      pipe: { color: "#e0f2fe", emissive: HOVER.emissive, emissiveIntensity: 0.25, metalness: 0.65, roughness: 0.34 },
+      base: { color: "#93c5fd", emissive: HOVER.emissive, emissiveIntensity: 0.28, metalness: 0.48, roughness: 0.44 },
+    };
+  }
+  return {
+    fin: { color: "#8a94a4", emissive: "#000000", emissiveIntensity: 0, metalness: 0.35, roughness: 0.52 },
+    pipe: { color: "#d8dee8", emissive: "#000000", emissiveIntensity: 0, metalness: 0.65, roughness: 0.32 },
+    base: { color: "#5a6578", emissive: "#000000", emissiveIntensity: 0, metalness: 0.45, roughness: 0.48 },
+  };
+}
+
+/** 120 mm–style fan facing +Z */
+function CaseFanVisual({ position, scale = 1, emphasis = "idle" }) {
+  const m = fanEmphasisMat(emphasis, "#5c6b7e", "#3d4a5c", "#4a5a6e");
   return (
     <group position={position} scale={scale}>
       <mesh castShadow>
         <torusGeometry args={[0.05, 0.007, 10, 40]} />
-        <meshStandardMaterial color="#5c6b7e" metalness={0.45} roughness={0.42} />
+        <meshStandardMaterial {...m.ring} />
       </mesh>
       <mesh position={[0, 0, 0.004]}>
         <cylinderGeometry args={[0.024, 0.024, 0.016, 24]} />
-        <meshStandardMaterial color="#3d4a5c" metalness={0.35} roughness={0.48} />
+        <meshStandardMaterial {...m.hub} />
       </mesh>
       {[0, 1, 2, 3].map((i) => (
         <mesh key={i} rotation={[0, 0, (i * Math.PI) / 2]} position={[0, 0, 0.003]} castShadow>
           <boxGeometry args={[0.092, 0.022, 0.016]} />
-          <meshStandardMaterial color="#4a5a6e" metalness={0.25} roughness={0.55} />
+          <meshStandardMaterial {...m.blade} />
         </mesh>
       ))}
     </group>
@@ -69,10 +121,26 @@ function GpuFanVisual({ position, scale = 1 }) {
 export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
   const common = { selectedId, hoveredId, onSelect, onHover };
 
-  /* World-ish reference points for arrows (inside model group, before root offset). */
-  const cpuTarget = [-0.068, 0.618, -0.184];
-  const storageTarget = [0.09, 0.382, -0.182];
+  /* Arrow targets + part positions (inside model group, before root y = -0.15). */
+  const cpuTarget = [-0.068, 0.612, -0.148];
+  const storageTarget = [0.13, 0.48, -0.176];
   const psuTarget = [0, 0.146, -0.12];
+
+  const coolerEm = partEmphasis("cooler", selectedId, hoveredId);
+  const coolerMat = coolerStackMat(coolerEm);
+  const fansEm = partEmphasis("fans", selectedId, hoveredId);
+  const fansBezelMat =
+    fansEm === "selected"
+      ? { color: SELECTION.surface, emissive: SELECTION.emissive, emissiveIntensity: 0.45, metalness: 0.4, roughness: 0.42 }
+      : fansEm === "hover"
+        ? { color: HOVER.surface, emissive: HOVER.emissive, emissiveIntensity: 0.28, metalness: 0.38, roughness: 0.46 }
+        : { color: "#5a6a80", emissive: "#000000", emissiveIntensity: 0, metalness: 0.42, roughness: 0.48 };
+  const fansRingMat =
+    fansEm === "selected"
+      ? { color: "#38bdf8", emissive: SELECTION.emissive, emissiveIntensity: 0.5, metalness: 0.35, roughness: 0.45, side: 2 }
+      : fansEm === "hover"
+        ? { color: "#60a5fa", emissive: HOVER.emissive, emissiveIntensity: 0.3, metalness: 0.32, roughness: 0.5, side: 2 }
+        : { color: "#5a6a7e", emissive: "#000000", emissiveIntensity: 0, metalness: 0.32, roughness: 0.52, side: 2 };
 
   return (
     <group position={[0, -0.15, 0]}>
@@ -133,15 +201,15 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
         </mesh>
       </NoRaycastGroup>
 
-      {/* —— CPU (under cooler — zoom + highlight via camera; no pop-out) —— */}
+      {/* —— CPU IHS: large + nudged toward case interior so it’s visible under cooler —— */}
       <mesh position={cpuTarget} rotation={[Math.PI / 2, 0, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.024, 0.024, 0.012, 28]} />
+        <cylinderGeometry args={[0.042, 0.042, 0.022, 32]} />
         <meshStandardMaterial
-          color={selectedId === "cpu" ? SELECTION.surface : "#f1f5f9"}
-          metalness={selectedId === "cpu" ? SELECTION.metalnessSelected : 0.75}
-          roughness={selectedId === "cpu" ? SELECTION.roughnessSelected : 0.28}
-          emissive={selectedId === "cpu" ? SELECTION.emissive : "#000000"}
-          emissiveIntensity={selectedId === "cpu" ? SELECTION.emissiveIntensity : 0}
+          color={selectedId === "cpu" ? SELECTION.surface : "#fffbeb"}
+          metalness={selectedId === "cpu" ? SELECTION.metalnessSelected : 0.55}
+          roughness={selectedId === "cpu" ? SELECTION.roughnessSelected : 0.32}
+          emissive={selectedId === "cpu" ? SELECTION.emissive : "#fbbf24"}
+          emissiveIntensity={selectedId === "cpu" ? SELECTION.emissiveIntensity : 0.35}
         />
       </mesh>
 
@@ -162,7 +230,7 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
         {Array.from({ length: 22 }, (_, i) => (
           <mesh key={i} position={[-0.152 + i * 0.0088, 0.706, -0.174]} castShadow>
             <boxGeometry args={[0.004, 0.132, 0.105]} />
-            <meshStandardMaterial color="#8a94a4" metalness={0.35} roughness={0.52} />
+            <meshStandardMaterial {...coolerMat.fin} />
           </mesh>
         ))}
         {[
@@ -178,13 +246,13 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
             castShadow
           >
             <cylinderGeometry args={[0.0075, 0.0075, 0.12, 10]} />
-            <meshStandardMaterial color="#d8dee8" metalness={0.65} roughness={0.32} />
+            <meshStandardMaterial {...coolerMat.pipe} />
           </mesh>
         ))}
         <RoundedBox args={[0.055, 0.055, 0.038]} radius={0.012} position={[-0.068, 0.618, -0.184]} castShadow>
-          <meshStandardMaterial color="#5a6578" metalness={0.45} roughness={0.48} />
+          <meshStandardMaterial {...coolerMat.base} />
         </RoundedBox>
-        <CaseFanVisual position={[0.058, 0.702, -0.168]} scale={0.58} />
+        <CaseFanVisual position={[0.058, 0.702, -0.168]} scale={0.58} emphasis={coolerEm} />
       </NoRaycastGroup>
 
       {/* —— RAM (DIMM-style spreader + notch silhouette) —— */}
@@ -289,47 +357,47 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
         </PopOutOnSelect>
       </group>
 
-      {/* —— M.2 SSD (larger + vivid; zoom-out camera + cyan highlight when selected) —— */}
+      {/* —— M.2 SSD: upper board area, bright green + glow so it reads from the default angle —— */}
       <NoRaycastGroup>
-        <group position={storageTarget} rotation={[0.12, 0, 0]}>
+        <group position={storageTarget} rotation={[0.06, 0, 0]} scale={1.2}>
           <mesh position={[0, 0, 0]} castShadow receiveShadow>
-            <boxGeometry args={[0.15, 0.016, 0.03]} />
+            <boxGeometry args={[0.2, 0.022, 0.038]} />
             <meshStandardMaterial
-              color={selectedId === "storage" ? SELECTION.surface : "#22c55e"}
-              metalness={selectedId === "storage" ? SELECTION.metalnessSelected : 0.1}
-              roughness={selectedId === "storage" ? SELECTION.roughnessSelected : 0.78}
-              emissive={selectedId === "storage" ? SELECTION.emissive : "#14532d"}
-              emissiveIntensity={selectedId === "storage" ? SELECTION.emissiveIntensity : 0.18}
+              color={selectedId === "storage" ? SELECTION.surface : "#4ade80"}
+              metalness={selectedId === "storage" ? SELECTION.metalnessSelected : 0.08}
+              roughness={selectedId === "storage" ? SELECTION.roughnessSelected : 0.72}
+              emissive={selectedId === "storage" ? SELECTION.emissive : "#16a34a"}
+              emissiveIntensity={selectedId === "storage" ? SELECTION.emissiveIntensity : 0.55}
             />
           </mesh>
-          <mesh position={[-0.068, 0, 0.002]} castShadow>
-            <boxGeometry args={[0.028, 0.012, 0.024]} />
+          <mesh position={[-0.092, 0, 0.003]} castShadow>
+            <boxGeometry args={[0.034, 0.016, 0.03]} />
             <meshStandardMaterial
-              color={selectedId === "storage" ? "#fde047" : "#eab308"}
-              metalness={0.8}
-              roughness={0.28}
-              emissive={selectedId === "storage" ? "#ca8a04" : "#000000"}
-              emissiveIntensity={selectedId === "storage" ? 0.35 : 0}
+              color="#facc15"
+              metalness={0.85}
+              roughness={0.22}
+              emissive={selectedId === "storage" ? "#f59e0b" : "#ca8a04"}
+              emissiveIntensity={selectedId === "storage" ? 0.55 : 0.4}
             />
           </mesh>
-          <mesh position={[0.042, 0.002, 0.003]} castShadow>
-            <boxGeometry args={[0.048, 0.016, 0.024]} />
+          <mesh position={[0.055, 0.003, 0.004]} castShadow>
+            <boxGeometry args={[0.06, 0.02, 0.03]} />
             <meshStandardMaterial
-              color={selectedId === "storage" ? "#1e293b" : "#0f172a"}
-              metalness={0.12}
-              roughness={0.85}
-              emissive={selectedId === "storage" ? "#0ea5e9" : "#000000"}
-              emissiveIntensity={selectedId === "storage" ? 0.25 : 0}
+              color="#0f172a"
+              metalness={0.1}
+              roughness={0.88}
+              emissive={selectedId === "storage" ? "#38bdf8" : "#1e293b"}
+              emissiveIntensity={selectedId === "storage" ? 0.45 : 0.2}
             />
           </mesh>
-          <mesh position={[0.012, 0.01, 0.016]}>
-            <boxGeometry args={[0.062, 0.003, 0.018]} />
+          <mesh position={[0.015, 0.014, 0.02]}>
+            <boxGeometry args={[0.08, 0.004, 0.022]} />
             <meshStandardMaterial
               color="#ffffff"
-              metalness={0.15}
-              roughness={0.55}
-              emissive={selectedId === "storage" ? "#e0f2fe" : "#000000"}
-              emissiveIntensity={selectedId === "storage" ? 0.2 : 0}
+              metalness={0.12}
+              roughness={0.5}
+              emissive={selectedId === "storage" ? "#e0f2fe" : "#f8fafc"}
+              emissiveIntensity={selectedId === "storage" ? 0.35 : 0.15}
             />
           </mesh>
         </group>
@@ -374,24 +442,24 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
 
       <NoRaycastGroup>
         <RoundedBox args={[0.42, 0.38, 0.022]} radius={0.014} position={[0, 0.74, 0.218]} castShadow>
-          <meshStandardMaterial color="#5a6a80" metalness={0.42} roughness={0.48} />
+          <meshStandardMaterial {...fansBezelMat} />
         </RoundedBox>
-        <CaseFanVisual position={[-0.115, 0.74, 0.242]} scale={1} />
-        <CaseFanVisual position={[0.115, 0.74, 0.242]} scale={1} />
+        <CaseFanVisual position={[-0.115, 0.74, 0.242]} scale={1} emphasis={fansEm} />
+        <CaseFanVisual position={[0.115, 0.74, 0.242]} scale={1} emphasis={fansEm} />
       </NoRaycastGroup>
 
       <NoRaycastGroup>
         <mesh position={[0, 0.74, 0.255]}>
           <ringGeometry args={[0.085, 0.098, 32]} />
-          <meshStandardMaterial color="#5a6a7e" metalness={0.32} roughness={0.52} side={2} />
+          <meshStandardMaterial {...fansRingMat} />
         </mesh>
         <mesh position={[-0.115, 0.74, 0.255]} rotation={[0, 0, 0.25]}>
           <ringGeometry args={[0.085, 0.098, 32]} />
-          <meshStandardMaterial color="#5a6a7e" metalness={0.32} roughness={0.52} side={2} />
+          <meshStandardMaterial {...fansRingMat} />
         </mesh>
         <mesh position={[0.115, 0.74, 0.255]} rotation={[0, 0, -0.2]}>
           <ringGeometry args={[0.085, 0.098, 32]} />
-          <meshStandardMaterial color="#5a6a7e" metalness={0.32} roughness={0.52} side={2} />
+          <meshStandardMaterial {...fansRingMat} />
         </mesh>
       </NoRaycastGroup>
 
@@ -406,17 +474,8 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
       />
       <PartArrow
         partId="storage"
-        position={[-0.24, 0.44, 0.12]}
+        position={[-0.24, 0.5, 0.12]}
         lookAt={storageTarget}
-        selectedId={selectedId}
-        hoveredId={hoveredId}
-        onSelect={onSelect}
-        onHover={onHover}
-      />
-      <PartArrow
-        partId="psu"
-        position={[0.26, 0.12, 0.14]}
-        lookAt={psuTarget}
         selectedId={selectedId}
         hoveredId={hoveredId}
         onSelect={onSelect}
