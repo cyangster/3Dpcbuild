@@ -7,7 +7,7 @@ export function PCScene({ selectedId, hoveredId, onSelect, onHover }) {
   return (
     <Canvas
       shadows
-      camera={{ position: [1.35, 0.85, 1.55], fov: 45 }}
+      camera={{ position: [1.45, 0.72, 1.65], fov: 42 }}
       gl={{ antialias: true, alpha: true }}
       onPointerMissed={() => onSelect(null)}
     >
@@ -49,13 +49,13 @@ export function PCScene({ selectedId, hoveredId, onSelect, onHover }) {
       </Suspense>
 
       <OrbitControls
-        enablePan
+        enablePan={false}
         enableDamping
         dampingFactor={0.08}
-        minPolarAngle={0.35}
-        maxPolarAngle={Math.PI / 2 - 0.08}
-        minDistance={0.85}
-        maxDistance={4}
+        minPolarAngle={0.06}
+        maxPolarAngle={Math.PI - 0.06}
+        minDistance={1.05}
+        maxDistance={4.25}
         target={[0, 0.45, 0]}
       />
     </Canvas>

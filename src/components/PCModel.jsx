@@ -1,10 +1,19 @@
+import { useEffect, useRef } from "react";
 import { ClickablePart } from "./ClickablePart";
+import { PartArrow } from "./PartArrow";
 
 /**
  * Stylized mid-tower built from boxes. Y is up; case opening faces +Z (toward camera by default).
+ * CPU, M.2, and similar parts are visual-only; red arrows call out hard-to-hit or hidden pieces.
  */
 export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
   const common = { selectedId, hoveredId, onSelect, onHover };
+  const fanGrillRef = useRef(null);
+
+  useEffect(() => {
+    const m = fanGrillRef.current;
+    if (m) m.raycast = () => {};
+  }, []);
 
   return (
     <group position={[0, -0.15, 0]}>
@@ -41,16 +50,12 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
         {...common}
       />
 
-      {/* CPU + cooler stack */}
-      <ClickablePart
-        partId="cpu"
-        position={[-0.06, 0.62, -0.16]}
-        args={[0.09, 0.09, 0.04]}
-        color="#3a3a42"
-        metalness={0.85}
-        roughness={0.25}
-        {...common}
-      />
+      {/* CPU — hidden under cooler; use red arrow to open details */}
+      <mesh position={[-0.06, 0.62, -0.16]} castShadow receiveShadow>
+        <boxGeometry args={[0.09, 0.09, 0.04]} />
+        <meshStandardMaterial color="#3a3a42" metalness={0.85} roughness={0.25} />
+      </mesh>
+
       <ClickablePart
         partId="cooler"
         position={[-0.06, 0.72, -0.16]}
@@ -91,7 +96,6 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
         roughness={0.35}
         {...common}
       />
-      {/* GPU accent — same hit target as GPU for clicks */}
       <mesh
         position={[0, 0.42, 0.11]}
         castShadow
@@ -119,19 +123,13 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
         />
       </mesh>
 
-      {/* M.2 SSD on board */}
-      <ClickablePart
-        partId="storage"
-        position={[0.08, 0.38, -0.175]}
-        rotation={[0.15, 0, 0]}
-        args={[0.1, 0.012, 0.035]}
-        color="#2a2a32"
-        metalness={0.7}
-        roughness={0.35}
-        {...common}
-      />
+      {/* M.2 SSD — too small / tucked away; arrow points to it */}
+      <mesh position={[0.08, 0.38, -0.175]} rotation={[0.15, 0, 0]} castShadow receiveShadow>
+        <boxGeometry args={[0.1, 0.012, 0.035]} />
+        <meshStandardMaterial color="#2a2a32" metalness={0.7} roughness={0.35} />
+      </mesh>
 
-      {/* PSU shroud area */}
+      {/* PSU — often blocked by GPU from the front */}
       <ClickablePart
         partId="psu"
         position={[0, 0.14, -0.12]}
@@ -152,7 +150,7 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
         roughness={0.4}
         {...common}
       />
-      <mesh position={[0, 0.75, 0.241]} rotation={[0, 0, Math.PI / 6]}>
+      <mesh ref={fanGrillRef} position={[0, 0.75, 0.241]} rotation={[0, 0, Math.PI / 6]}>
         <circleGeometry args={[0.12, 24]} />
         <meshStandardMaterial
           color="#1a1e28"
@@ -161,6 +159,35 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
           side={2}
         />
       </mesh>
+
+      {/* Red arrows → hidden or hard-to-hit parts */}
+      <PartArrow
+        partId="cpu"
+        position={[0.24, 0.54, 0.11]}
+        lookAt={[-0.06, 0.62, -0.16]}
+        selectedId={selectedId}
+        hoveredId={hoveredId}
+        onSelect={onSelect}
+        onHover={onHover}
+      />
+      <PartArrow
+        partId="storage"
+        position={[-0.22, 0.46, 0.12]}
+        lookAt={[0.08, 0.38, -0.175]}
+        selectedId={selectedId}
+        hoveredId={hoveredId}
+        onSelect={onSelect}
+        onHover={onHover}
+      />
+      <PartArrow
+        partId="psu"
+        position={[0.24, 0.12, 0.13]}
+        lookAt={[0, 0.14, -0.12]}
+        selectedId={selectedId}
+        hoveredId={hoveredId}
+        onSelect={onSelect}
+        onHover={onHover}
+      />
     </group>
   );
 }
