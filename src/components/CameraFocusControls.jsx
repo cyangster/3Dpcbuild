@@ -1,22 +1,20 @@
 import { useRef, useEffect, useLayoutEffect } from "react";
-import { useThree, useFrame } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
-import { DEFAULT_CAMERA, getCameraForPart } from "../data/cameraFocus.js";
+import { DEFAULT_CAMERA, getFocusTargetForPart } from "../data/cameraFocus.js";
 
 /**
- * Orbit controls. When `sidebarFocusNonce` increments (sidebar pick), smoothly frames that part
- * from the current view, then re-enables orbit. Clicks in the 3D scene only change selection and
- * do not trigger this tween.
+ * Orbit controls. Sidebar picks only ease the orbit *target* toward the part (pivot / look-at
+ * point). Camera world position is not translated—view swings to center the component. 3D clicks
+ * do not trigger this. Controls stay enabled (no lock).
  */
 export function CameraFocusControls({ selectedId, sidebarFocusNonce }) {
   const controlsRef = useRef(null);
-  const { camera } = useThree();
   const selectedIdRef = useRef(selectedId);
   selectedIdRef.current = selectedId;
 
   const goalTarget = useRef(new THREE.Vector3().fromArray(DEFAULT_CAMERA.target));
-  const goalPosition = useRef(new THREE.Vector3().fromArray(DEFAULT_CAMERA.position));
   const animating = useRef(false);
 
   useLayoutEffect(() => {
@@ -33,29 +31,23 @@ export function CameraFocusControls({ selectedId, sidebarFocusNonce }) {
     const ctrl = controlsRef.current;
     if (id == null || !ctrl) return;
 
-    const cfg = getCameraForPart(id);
-    goalTarget.current.set(cfg.target[0], cfg.target[1], cfg.target[2]);
-    goalPosition.current.set(cfg.position[0], cfg.position[1], cfg.position[2]);
+    const t = getFocusTargetForPart(id);
+    goalTarget.current.set(t[0], t[1], t[2]);
     animating.current = true;
-    ctrl.enabled = false;
   }, [sidebarFocusNonce]);
 
   useFrame((_, delta) => {
     const ctrl = controlsRef.current;
     if (!ctrl || !animating.current) return;
 
-    const k = 1 - Math.exp(-4.2 * delta);
+    const k = 1 - Math.exp(-5.5 * delta);
     ctrl.target.lerp(goalTarget.current, k);
-    camera.position.lerp(goalPosition.current, k);
-    if (
-      ctrl.target.distanceTo(goalTarget.current) < 0.025 &&
-      camera.position.distanceTo(goalPosition.current) < 0.04
-    ) {
+    ctrl.update();
+
+    if (ctrl.target.distanceTo(goalTarget.current) < 0.018) {
       ctrl.target.copy(goalTarget.current);
-      camera.position.copy(goalPosition.current);
-      animating.current = false;
-      ctrl.enabled = true;
       ctrl.update();
+      animating.current = false;
     }
   });
 

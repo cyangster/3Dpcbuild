@@ -5,7 +5,7 @@ import { PC_PARTS, PART_IDS } from "./data/pcParts.js";
 export default function App() {
   const [selectedId, setSelectedId] = useState(null);
   const [hoveredId, setHoveredId] = useState(null);
-  /** Bumps only on sidebar list clicks so the camera frames the part; 3D picks do not bump. */
+  /** Bumps only on sidebar list clicks so the orbit target eases toward that part; 3D picks do not. */
   const [sidebarFocusNonce, setSidebarFocusNonce] = useState(0);
 
   const onSelect = useCallback((id) => {
@@ -24,9 +24,9 @@ export default function App() {
         <div className="header-inner">
           <h1 className="title">Interactive 3D PC</h1>
           <p className="subtitle">
-            Choose a part in the list to highlight it and read details. Drag to orbit and pinch to
-            zoom—the view stays under your control. Tap the model, use the red arrow for the CPU
-            (central processing unit), or pick SSD (solid-state drive) in the list.
+            Choose a part in the list to swing the view toward it and read details (your vantage
+            point stays put; only the aim moves). Drag to orbit and pinch to zoom anytime. Tap the
+            model to select without changing the view.
           </p>
         </div>
       </header>
@@ -89,7 +89,7 @@ export default function App() {
               </div>
             ) : (
               <p className="details-placeholder">
-                Pick a component from the list to frame it and read what it does.
+                Pick a component from the list to aim the view at it and read what it does.
               </p>
             )}
           </div>
