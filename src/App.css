@@ -126,7 +126,7 @@ body {
   flex-direction: column;
   border-left: 1px solid var(--border);
   background: var(--surface);
-  max-height: calc(100dvh - 5.5rem);
+  max-height: calc(100dvh - 4rem);
   overflow: hidden;
 }
 
@@ -323,18 +323,5 @@ body {
 .clear-btn:active {
   color: var(--text);
   border-color: var(--text-muted);
-  background: var(--surface);
-}
-
-.footer {
-  flex-shrink: 0;
-  padding-top: 0.65rem;
-  padding-right: max(1rem, env(safe-area-inset-right));
-  padding-bottom: max(0.65rem, env(safe-area-inset-bottom));
-  padding-left: max(1rem, env(safe-area-inset-left));
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  border-top: 1px solid var(--border);
-  text-align: center;
   background: var(--surface);
 }

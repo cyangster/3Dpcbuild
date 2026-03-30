@@ -88,10 +88,6 @@ export default function App() {
           </div>
         </aside>
       </main>
-
-      <footer className="footer">
-        <span>Built with React, Vite, and React Three Fiber — deploys on Vercel as a static site.</span>
-      </footer>
     </div>
   );
 }
