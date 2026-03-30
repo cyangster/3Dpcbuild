@@ -138,8 +138,8 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
         <PopOutOnSelect
           partId="cpu"
           selectedId={selectedId}
-          offset={[0.035, 0.05, 0.16]}
-          scaleBoost={0.22}
+          offset={[0.1, 0.2, 0.56]}
+          scaleBoost={0.32}
         >
           <mesh rotation={[Math.PI / 2, 0, 0]} castShadow receiveShadow>
             <cylinderGeometry args={[0.021, 0.021, 0.011, 28]} />
@@ -219,71 +219,78 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
         </group>
       ))}
 
-      {/* —— GPU: invisible bounds + shroud / fans / backplate —— */}
-      <ClickablePart
-        partId="gpu"
-        position={[0, 0.42, 0.028]}
-        args={[0.38, 0.145, 0.24]}
-        color="#15151c"
-        transparent
-        opacity={0}
-        metalness={0.55}
-        roughness={0.35}
-        {...common}
-      />
-
-      <NoRaycastGroup>
-        <mesh position={[0, 0.42, -0.075]} castShadow receiveShadow>
-          <boxGeometry args={[0.32, 0.1, 0.012]} />
-          <meshStandardMaterial color="#64748b" metalness={0.65} roughness={0.28} />
-        </mesh>
-        <RoundedBox
-          args={[0.34, 0.118, 0.198]}
-          radius={0.026}
-          smoothness={4}
-          position={[0, 0.42, 0.035]}
-          castShadow
-          receiveShadow
+      {/* —— GPU: slides out of the case when selected (same center as before) —— */}
+      <group position={[0, 0.42, 0.028]}>
+        <PopOutOnSelect
+          partId="gpu"
+          selectedId={selectedId}
+          offset={[0, 0.05, 0.42]}
+          scaleBoost={0.12}
         >
-          <meshStandardMaterial color="#1e293b" metalness={0.55} roughness={0.42} />
-        </RoundedBox>
-        {/* GPU: blue accent + purple trim — reads as dual-slot card, not a flat SSD */}
-        <mesh position={[0, 0.448, 0.138]} castShadow>
-          <boxGeometry args={[0.28, 0.028, 0.014]} />
-          <meshStandardMaterial
-            color={
-              selectedId === "gpu"
-                ? SELECTION.surface
-                : hoveredId === "gpu"
-                  ? HOVER.surface
-                  : "#2563eb"
-            }
-            emissive={selectedId === "gpu" ? SELECTION.emissive : hoveredId === "gpu" ? HOVER.emissive : "#1e40af"}
-            emissiveIntensity={
-              selectedId === "gpu"
-                ? SELECTION.emissiveIntensity
-                : hoveredId === "gpu"
-                  ? HOVER.emissiveIntensity
-                  : 0.32
-            }
-            metalness={selectedId === "gpu" ? SELECTION.metalnessSelected : 0.35}
-            roughness={selectedId === "gpu" ? SELECTION.roughnessSelected : 0.4}
-          />
-        </mesh>
-        <mesh position={[0, 0.418, 0.136]} castShadow>
-          <boxGeometry args={[0.26, 0.012, 0.012]} />
-          <meshStandardMaterial
-            color="#7c3aed"
-            emissive="#4c1d95"
-            emissiveIntensity={0.35}
-            metalness={0.4}
+          <ClickablePart
+            partId="gpu"
+            position={[0, 0, 0]}
+            args={[0.38, 0.145, 0.24]}
+            color="#15151c"
+            transparent
+            opacity={0}
+            metalness={0.55}
             roughness={0.35}
+            {...common}
           />
-        </mesh>
-        <GpuFanVisual position={[-0.1, 0.42, 0.132]} scale={0.92} />
-        <GpuFanVisual position={[0, 0.42, 0.132]} scale={0.92} />
-        <GpuFanVisual position={[0.1, 0.42, 0.132]} scale={0.92} />
-      </NoRaycastGroup>
+          <NoRaycastGroup>
+            <mesh position={[0, 0, -0.103]} castShadow receiveShadow>
+              <boxGeometry args={[0.32, 0.1, 0.012]} />
+              <meshStandardMaterial color="#64748b" metalness={0.65} roughness={0.28} />
+            </mesh>
+            <RoundedBox
+              args={[0.34, 0.118, 0.198]}
+              radius={0.026}
+              smoothness={4}
+              position={[0, 0, 0.007]}
+              castShadow
+              receiveShadow
+            >
+              <meshStandardMaterial color="#1e293b" metalness={0.55} roughness={0.42} />
+            </RoundedBox>
+            <mesh position={[0, 0.028, 0.11]} castShadow>
+              <boxGeometry args={[0.28, 0.028, 0.014]} />
+              <meshStandardMaterial
+                color={
+                  selectedId === "gpu"
+                    ? SELECTION.surface
+                    : hoveredId === "gpu"
+                      ? HOVER.surface
+                      : "#2563eb"
+                }
+                emissive={selectedId === "gpu" ? SELECTION.emissive : hoveredId === "gpu" ? HOVER.emissive : "#1e40af"}
+                emissiveIntensity={
+                  selectedId === "gpu"
+                    ? SELECTION.emissiveIntensity
+                    : hoveredId === "gpu"
+                      ? HOVER.emissiveIntensity
+                      : 0.32
+                }
+                metalness={selectedId === "gpu" ? SELECTION.metalnessSelected : 0.35}
+                roughness={selectedId === "gpu" ? SELECTION.roughnessSelected : 0.4}
+              />
+            </mesh>
+            <mesh position={[0, -0.002, 0.108]} castShadow>
+              <boxGeometry args={[0.26, 0.012, 0.012]} />
+              <meshStandardMaterial
+                color="#7c3aed"
+                emissive="#4c1d95"
+                emissiveIntensity={0.35}
+                metalness={0.4}
+                roughness={0.35}
+              />
+            </mesh>
+            <GpuFanVisual position={[-0.1, 0, 0.104]} scale={0.92} />
+            <GpuFanVisual position={[0, 0, 0.104]} scale={0.92} />
+            <GpuFanVisual position={[0.1, 0, 0.104]} scale={0.92} />
+          </NoRaycastGroup>
+        </PopOutOnSelect>
+      </group>
 
       {/* —— M.2 SSD (visual — slides out toward viewer when selected) —— */}
       <NoRaycastGroup>
@@ -320,8 +327,8 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
         <PopOutOnSelect
           partId="psu"
           selectedId={selectedId}
-          offset={[0, 0.04, 0.15]}
-          scaleBoost={0.06}
+          offset={[0, 0.22, 0.48]}
+          scaleBoost={0.14}
         >
           <ClickableRoundedBox
             partId="psu"

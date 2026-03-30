@@ -1,11 +1,12 @@
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 
-const EASE = 5.2;
+/** Higher = reaches “outside the case” pose faster */
+const EASE = 6.4;
 
 /**
  * Smoothly translates and scales children when `selectedId === partId` (e.g. arrow or sidebar).
- * Offset is in parent local space; +Z moves toward the front of the case / viewer.
+ * Large +Z offset pulls parts past the case opening (~ z ≈ 0.25) so they float in front for inspection.
  */
 export function PopOutOnSelect({ partId, selectedId, offset = [0, 0, 0.12], scaleBoost = 0.1, children }) {
   const ref = useRef(null);
