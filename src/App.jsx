@@ -23,7 +23,9 @@ export default function App() {
           <h1 className="title">Interactive 3D PC</h1>
           <p className="subtitle">
             Choose a part in the list to fly the camera to it and open details. You can still drag
-            to orbit and pinch to zoom. Tap the model or use red arrows for hidden parts.
+            to orbit and pinch to zoom. Tap the model, use the red arrow for the CPU (central
+            processing unit), or pick SSD (solid-state drive) in the list—the camera moves to frame
+            it.
           </p>
         </div>
       </header>

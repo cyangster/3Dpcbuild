@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Environment, ContactShadows } from "@react-three/drei";
+import { DEFAULT_CAMERA } from "../data/cameraFocus.js";
 import { PCModel } from "./PCModel";
 import { CameraFocusControls } from "./CameraFocusControls.jsx";
 
@@ -8,7 +9,7 @@ export function PCScene({ selectedId, hoveredId, onSelect, onHover }) {
   return (
     <Canvas
       shadows
-      camera={{ position: [1.45, 0.72, 1.65], fov: 42 }}
+      camera={{ position: DEFAULT_CAMERA.position, fov: 42 }}
       gl={{ antialias: true, alpha: true }}
       onPointerMissed={() => onSelect(null)}
     >
