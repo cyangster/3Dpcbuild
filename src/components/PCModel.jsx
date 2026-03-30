@@ -235,7 +235,7 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
       <NoRaycastGroup>
         <mesh position={[0, 0.42, -0.075]} castShadow receiveShadow>
           <boxGeometry args={[0.32, 0.1, 0.012]} />
-          <meshStandardMaterial color="#2d3a4d" metalness={0.45} roughness={0.45} />
+          <meshStandardMaterial color="#64748b" metalness={0.65} roughness={0.28} />
         </mesh>
         <RoundedBox
           args={[0.34, 0.118, 0.198]}
@@ -245,8 +245,9 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
           castShadow
           receiveShadow
         >
-          <meshStandardMaterial color="#3d4f68" metalness={0.5} roughness={0.38} />
+          <meshStandardMaterial color="#1e293b" metalness={0.55} roughness={0.42} />
         </RoundedBox>
+        {/* GPU: blue accent + purple trim — reads as dual-slot card, not a flat SSD */}
         <mesh position={[0, 0.448, 0.138]} castShadow>
           <boxGeometry args={[0.28, 0.028, 0.014]} />
           <meshStandardMaterial
@@ -255,18 +256,28 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
                 ? SELECTION.surface
                 : hoveredId === "gpu"
                   ? HOVER.surface
-                  : "#3b82f6"
+                  : "#2563eb"
             }
-            emissive={selectedId === "gpu" ? SELECTION.emissive : hoveredId === "gpu" ? HOVER.emissive : "#1e3a5f"}
+            emissive={selectedId === "gpu" ? SELECTION.emissive : hoveredId === "gpu" ? HOVER.emissive : "#1e40af"}
             emissiveIntensity={
               selectedId === "gpu"
                 ? SELECTION.emissiveIntensity
                 : hoveredId === "gpu"
                   ? HOVER.emissiveIntensity
-                  : 0.28
+                  : 0.32
             }
             metalness={selectedId === "gpu" ? SELECTION.metalnessSelected : 0.35}
             roughness={selectedId === "gpu" ? SELECTION.roughnessSelected : 0.4}
+          />
+        </mesh>
+        <mesh position={[0, 0.418, 0.136]} castShadow>
+          <boxGeometry args={[0.26, 0.012, 0.012]} />
+          <meshStandardMaterial
+            color="#7c3aed"
+            emissive="#4c1d95"
+            emissiveIntensity={0.35}
+            metalness={0.4}
+            roughness={0.35}
           />
         </mesh>
         <GpuFanVisual position={[-0.1, 0.42, 0.132]} scale={0.92} />
@@ -283,12 +294,22 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
             offset={[0, 0.025, 0.13]}
             scaleBoost={0.18}
           >
-            <RoundedBox args={[0.095, 0.014, 0.024]} radius={0.003} castShadow>
-              <meshStandardMaterial color="#475569" metalness={0.5} roughness={0.4} />
-            </RoundedBox>
-            <mesh position={[0.02, 0.012, 0]}>
-              <boxGeometry args={[0.018, 0.012, 0.022]} />
-              <meshStandardMaterial color="#334155" metalness={0.18} roughness={0.78} />
+            {/* M.2 “gumstick”: green PCB + gold fingers — clearly not the GPU shroud */}
+            <mesh position={[0, 0, 0]} castShadow receiveShadow>
+              <boxGeometry args={[0.11, 0.011, 0.022]} />
+              <meshStandardMaterial color="#15803d" metalness={0.12} roughness={0.82} />
+            </mesh>
+            <mesh position={[-0.048, 0, 0.001]} castShadow>
+              <boxGeometry args={[0.022, 0.009, 0.018]} />
+              <meshStandardMaterial color="#ca8a04" metalness={0.75} roughness={0.35} />
+            </mesh>
+            <mesh position={[0.028, 0.002, 0.002]} castShadow>
+              <boxGeometry args={[0.038, 0.012, 0.018]} />
+              <meshStandardMaterial color="#0f172a" metalness={0.15} roughness={0.88} />
+            </mesh>
+            <mesh position={[0.01, 0.007, 0.012]}>
+              <boxGeometry args={[0.045, 0.002, 0.014]} />
+              <meshStandardMaterial color="#e2e8f0" metalness={0.2} roughness={0.65} />
             </mesh>
           </PopOutOnSelect>
         </group>
