@@ -3,6 +3,7 @@ import { RoundedBox } from "@react-three/drei";
 import { ClickablePart } from "./ClickablePart";
 import { ClickableRoundedBox } from "./ClickableRoundedBox";
 import { PartArrow } from "./PartArrow";
+import { PopOutOnSelect } from "./PopOutOnSelect.jsx";
 import { HOVER, SELECTION } from "../theme/selectionHighlight.js";
 
 function NoRaycastGroup({ children }) {
@@ -132,11 +133,20 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
         </mesh>
       </NoRaycastGroup>
 
-      {/* —— CPU (under cooler — visual only) —— */}
-      <mesh position={cpuTarget} rotation={[Math.PI / 2, 0, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.021, 0.021, 0.011, 28]} />
-        <meshStandardMaterial color="#e2e8f0" metalness={0.75} roughness={0.28} />
-      </mesh>
+      {/* —— CPU (under cooler — pops forward when selected via arrow / sidebar) —— */}
+      <group position={cpuTarget}>
+        <PopOutOnSelect
+          partId="cpu"
+          selectedId={selectedId}
+          offset={[0.035, 0.05, 0.16]}
+          scaleBoost={0.22}
+        >
+          <mesh rotation={[Math.PI / 2, 0, 0]} castShadow receiveShadow>
+            <cylinderGeometry args={[0.021, 0.021, 0.011, 28]} />
+            <meshStandardMaterial color="#e2e8f0" metalness={0.75} roughness={0.28} />
+          </mesh>
+        </PopOutOnSelect>
+      </group>
 
       {/* —— Tower CPU cooler (visual) + invisible hit box —— */}
       <ClickablePart
@@ -264,43 +274,58 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
         <GpuFanVisual position={[0.1, 0.42, 0.132]} scale={0.92} />
       </NoRaycastGroup>
 
-      {/* —— M.2 SSD (visual) —— */}
+      {/* —— M.2 SSD (visual — slides out toward viewer when selected) —— */}
       <NoRaycastGroup>
         <group position={storageTarget} rotation={[0.12, 0, 0]}>
-          <RoundedBox args={[0.095, 0.014, 0.024]} radius={0.003} castShadow>
-            <meshStandardMaterial color="#475569" metalness={0.5} roughness={0.4} />
-          </RoundedBox>
-          <mesh position={[0.02, 0.012, 0]}>
-            <boxGeometry args={[0.018, 0.012, 0.022]} />
-            <meshStandardMaterial color="#334155" metalness={0.18} roughness={0.78} />
-          </mesh>
+          <PopOutOnSelect
+            partId="storage"
+            selectedId={selectedId}
+            offset={[0, 0.025, 0.13]}
+            scaleBoost={0.18}
+          >
+            <RoundedBox args={[0.095, 0.014, 0.024]} radius={0.003} castShadow>
+              <meshStandardMaterial color="#475569" metalness={0.5} roughness={0.4} />
+            </RoundedBox>
+            <mesh position={[0.02, 0.012, 0]}>
+              <boxGeometry args={[0.018, 0.012, 0.022]} />
+              <meshStandardMaterial color="#334155" metalness={0.18} roughness={0.78} />
+            </mesh>
+          </PopOutOnSelect>
         </group>
       </NoRaycastGroup>
 
-      {/* —— PSU —— */}
-      <ClickableRoundedBox
-        partId="psu"
-        args={[0.37, 0.118, 0.245]}
-        radius={0.018}
-        position={psuTarget}
-        color="#3d4a5c"
-        metalness={0.42}
-        roughness={0.5}
-        {...common}
-      />
-
-      <NoRaycastGroup>
-        {Array.from({ length: 6 }, (_, i) => (
-          <mesh key={i} position={[0, 0.12 + i * 0.018, psuTarget[2] + 0.121]}>
-            <boxGeometry args={[0.28, 0.008, 0.006]} />
-            <meshStandardMaterial color="#3d4858" metalness={0.32} roughness={0.58} />
-          </mesh>
-        ))}
-        <mesh position={[0, psuTarget[1], psuTarget[2] - 0.125]} castShadow>
-          <boxGeometry args={[0.32, 0.09, 0.02]} />
-          <meshStandardMaterial color="#4a5568" metalness={0.38} roughness={0.52} />
-        </mesh>
-      </NoRaycastGroup>
+      {/* —— PSU (whole unit nudges forward when selected) —— */}
+      <group position={psuTarget}>
+        <PopOutOnSelect
+          partId="psu"
+          selectedId={selectedId}
+          offset={[0, 0.04, 0.15]}
+          scaleBoost={0.06}
+        >
+          <ClickableRoundedBox
+            partId="psu"
+            args={[0.37, 0.118, 0.245]}
+            radius={0.018}
+            position={[0, 0, 0]}
+            color="#3d4a5c"
+            metalness={0.42}
+            roughness={0.5}
+            {...common}
+          />
+          <NoRaycastGroup>
+            {Array.from({ length: 6 }, (_, i) => (
+              <mesh key={i} position={[0, -0.026 + i * 0.018, 0.121]}>
+                <boxGeometry args={[0.28, 0.008, 0.006]} />
+                <meshStandardMaterial color="#3d4858" metalness={0.32} roughness={0.58} />
+              </mesh>
+            ))}
+            <mesh position={[0, 0, -0.125]} castShadow>
+              <boxGeometry args={[0.32, 0.09, 0.02]} />
+              <meshStandardMaterial color="#4a5568" metalness={0.38} roughness={0.52} />
+            </mesh>
+          </NoRaycastGroup>
+        </PopOutOnSelect>
+      </group>
 
       {/* —— Front intakes: invisible hit + dual 120 mm fans —— */}
       <ClickablePart
