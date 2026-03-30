@@ -133,20 +133,17 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
         </mesh>
       </NoRaycastGroup>
 
-      {/* —— CPU (under cooler — pops forward when selected via arrow / sidebar) —— */}
-      <group position={cpuTarget}>
-        <PopOutOnSelect
-          partId="cpu"
-          selectedId={selectedId}
-          offset={[0.1, 0.2, 0.56]}
-          scaleBoost={0.32}
-        >
-          <mesh rotation={[Math.PI / 2, 0, 0]} castShadow receiveShadow>
-            <cylinderGeometry args={[0.021, 0.021, 0.011, 28]} />
-            <meshStandardMaterial color="#e2e8f0" metalness={0.75} roughness={0.28} />
-          </mesh>
-        </PopOutOnSelect>
-      </group>
+      {/* —— CPU (under cooler — zoom + highlight via camera; no pop-out) —— */}
+      <mesh position={cpuTarget} rotation={[Math.PI / 2, 0, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.024, 0.024, 0.012, 28]} />
+        <meshStandardMaterial
+          color={selectedId === "cpu" ? SELECTION.surface : "#f1f5f9"}
+          metalness={selectedId === "cpu" ? SELECTION.metalnessSelected : 0.75}
+          roughness={selectedId === "cpu" ? SELECTION.roughnessSelected : 0.28}
+          emissive={selectedId === "cpu" ? SELECTION.emissive : "#000000"}
+          emissiveIntensity={selectedId === "cpu" ? SELECTION.emissiveIntensity : 0}
+        />
+      </mesh>
 
       {/* —— Tower CPU cooler (visual) + invisible hit box —— */}
       <ClickablePart
@@ -292,68 +289,75 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
         </PopOutOnSelect>
       </group>
 
-      {/* —— M.2 SSD (visual — slides out toward viewer when selected) —— */}
+      {/* —— M.2 SSD (larger + vivid; zoom-out camera + cyan highlight when selected) —— */}
       <NoRaycastGroup>
         <group position={storageTarget} rotation={[0.12, 0, 0]}>
-          <PopOutOnSelect
-            partId="storage"
-            selectedId={selectedId}
-            offset={[0, 0.025, 0.13]}
-            scaleBoost={0.18}
-          >
-            {/* M.2 “gumstick”: green PCB + gold fingers — clearly not the GPU shroud */}
-            <mesh position={[0, 0, 0]} castShadow receiveShadow>
-              <boxGeometry args={[0.11, 0.011, 0.022]} />
-              <meshStandardMaterial color="#15803d" metalness={0.12} roughness={0.82} />
-            </mesh>
-            <mesh position={[-0.048, 0, 0.001]} castShadow>
-              <boxGeometry args={[0.022, 0.009, 0.018]} />
-              <meshStandardMaterial color="#ca8a04" metalness={0.75} roughness={0.35} />
-            </mesh>
-            <mesh position={[0.028, 0.002, 0.002]} castShadow>
-              <boxGeometry args={[0.038, 0.012, 0.018]} />
-              <meshStandardMaterial color="#0f172a" metalness={0.15} roughness={0.88} />
-            </mesh>
-            <mesh position={[0.01, 0.007, 0.012]}>
-              <boxGeometry args={[0.045, 0.002, 0.014]} />
-              <meshStandardMaterial color="#e2e8f0" metalness={0.2} roughness={0.65} />
-            </mesh>
-          </PopOutOnSelect>
+          <mesh position={[0, 0, 0]} castShadow receiveShadow>
+            <boxGeometry args={[0.15, 0.016, 0.03]} />
+            <meshStandardMaterial
+              color={selectedId === "storage" ? SELECTION.surface : "#22c55e"}
+              metalness={selectedId === "storage" ? SELECTION.metalnessSelected : 0.1}
+              roughness={selectedId === "storage" ? SELECTION.roughnessSelected : 0.78}
+              emissive={selectedId === "storage" ? SELECTION.emissive : "#14532d"}
+              emissiveIntensity={selectedId === "storage" ? SELECTION.emissiveIntensity : 0.18}
+            />
+          </mesh>
+          <mesh position={[-0.068, 0, 0.002]} castShadow>
+            <boxGeometry args={[0.028, 0.012, 0.024]} />
+            <meshStandardMaterial
+              color={selectedId === "storage" ? "#fde047" : "#eab308"}
+              metalness={0.8}
+              roughness={0.28}
+              emissive={selectedId === "storage" ? "#ca8a04" : "#000000"}
+              emissiveIntensity={selectedId === "storage" ? 0.35 : 0}
+            />
+          </mesh>
+          <mesh position={[0.042, 0.002, 0.003]} castShadow>
+            <boxGeometry args={[0.048, 0.016, 0.024]} />
+            <meshStandardMaterial
+              color={selectedId === "storage" ? "#1e293b" : "#0f172a"}
+              metalness={0.12}
+              roughness={0.85}
+              emissive={selectedId === "storage" ? "#0ea5e9" : "#000000"}
+              emissiveIntensity={selectedId === "storage" ? 0.25 : 0}
+            />
+          </mesh>
+          <mesh position={[0.012, 0.01, 0.016]}>
+            <boxGeometry args={[0.062, 0.003, 0.018]} />
+            <meshStandardMaterial
+              color="#ffffff"
+              metalness={0.15}
+              roughness={0.55}
+              emissive={selectedId === "storage" ? "#e0f2fe" : "#000000"}
+              emissiveIntensity={selectedId === "storage" ? 0.2 : 0}
+            />
+          </mesh>
         </group>
       </NoRaycastGroup>
 
-      {/* —— PSU (whole unit nudges forward when selected) —— */}
-      <group position={psuTarget}>
-        <PopOutOnSelect
-          partId="psu"
-          selectedId={selectedId}
-          offset={[0, 0.22, 0.48]}
-          scaleBoost={0.14}
-        >
-          <ClickableRoundedBox
-            partId="psu"
-            args={[0.37, 0.118, 0.245]}
-            radius={0.018}
-            position={[0, 0, 0]}
-            color="#3d4a5c"
-            metalness={0.42}
-            roughness={0.5}
-            {...common}
-          />
-          <NoRaycastGroup>
-            {Array.from({ length: 6 }, (_, i) => (
-              <mesh key={i} position={[0, -0.026 + i * 0.018, 0.121]}>
-                <boxGeometry args={[0.28, 0.008, 0.006]} />
-                <meshStandardMaterial color="#3d4858" metalness={0.32} roughness={0.58} />
-              </mesh>
-            ))}
-            <mesh position={[0, 0, -0.125]} castShadow>
-              <boxGeometry args={[0.32, 0.09, 0.02]} />
-              <meshStandardMaterial color="#4a5568" metalness={0.38} roughness={0.52} />
-            </mesh>
-          </NoRaycastGroup>
-        </PopOutOnSelect>
-      </group>
+      {/* —— PSU (stays in case; zoom-out framing when selected from arrow/sidebar) —— */}
+      <ClickableRoundedBox
+        partId="psu"
+        args={[0.37, 0.118, 0.245]}
+        radius={0.018}
+        position={psuTarget}
+        color="#3d4a5c"
+        metalness={0.42}
+        roughness={0.5}
+        {...common}
+      />
+      <NoRaycastGroup>
+        {Array.from({ length: 6 }, (_, i) => (
+          <mesh key={i} position={[0, 0.12 + i * 0.018, psuTarget[2] + 0.121]}>
+            <boxGeometry args={[0.28, 0.008, 0.006]} />
+            <meshStandardMaterial color="#3d4858" metalness={0.32} roughness={0.58} />
+          </mesh>
+        ))}
+        <mesh position={[0, psuTarget[1], psuTarget[2] - 0.125]} castShadow>
+          <boxGeometry args={[0.32, 0.09, 0.02]} />
+          <meshStandardMaterial color="#4a5568" metalness={0.38} roughness={0.52} />
+        </mesh>
+      </NoRaycastGroup>
 
       {/* —— Front intakes: invisible hit + dual 120 mm fans —— */}
       <ClickablePart
