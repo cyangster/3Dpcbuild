@@ -50,7 +50,7 @@ export function PCScene({ selectedId, hoveredId, onSelect, onHover }) {
         <Environment preset="city" environmentIntensity={0.42} />
       </Suspense>
 
-      <CameraFocusControls selectedId={selectedId} />
+      <CameraFocusControls />
     </Canvas>
   );
 }

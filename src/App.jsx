@@ -22,10 +22,9 @@ export default function App() {
         <div className="header-inner">
           <h1 className="title">Interactive 3D PC</h1>
           <p className="subtitle">
-            Choose a part in the list to fly the camera to it and open details. You can still drag
-            to orbit and pinch to zoom. Tap the model, use the red arrow for the CPU (central
-            processing unit), or pick SSD (solid-state drive) in the list—the camera moves to frame
-            it.
+            Choose a part in the list to highlight it and read details. Drag to orbit and pinch to
+            zoom—the view stays under your control. Tap the model, use the red arrow for the CPU
+            (central processing unit), or pick SSD (solid-state drive) in the list.
           </p>
         </div>
       </header>
@@ -84,7 +83,7 @@ export default function App() {
               </div>
             ) : (
               <p className="details-placeholder">
-                Pick a component from the list to move the view to that part and read what it does.
+                Pick a component from the list to highlight it and read what it does.
               </p>
             )}
           </div>
