@@ -14,18 +14,9 @@ An interactive 3D explainer for PC components. Users orbit a stylized mid-tower 
 
 Together, **Vite + React** handle the app shell; **Three.js + R3F + Drei** handle the 3D view, camera, and interactions.
 
-## Scripts
+## Deploy (Vercel)
 
-```bash
-npm install    # dependencies
-npm run dev    # local dev at http://localhost:5173
-npm run build  # production output in dist/
-npm run preview # serve the production build locally
-```
-
-## Deploy (e.g. Vercel)
-
-This is a static SPA after `npm run build`. Connect the repo to [Vercel](https://vercel.com/), use the default Vite settings, or rely on the included `vercel.json` (`build` → `dist`).
+**Link: https://interactive3dpcbuild.vercel.app/ 
 
 ## Project layout (high level)
 
