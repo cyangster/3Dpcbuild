@@ -18,7 +18,7 @@ function NoRaycastGroup({ children }) {
   return <group ref={ref}>{children}</group>;
 }
 
-/** When CPU is selected, slide the IHS forward (+Z) and up (+Y) so it reads as coming out from under the tower cooler. */
+/** When CPU is selected, nudge the IHS slightly (+Y, +Z) so it still reads as under the tower but peeks out a little. */
 function CpuEmergesFromCooler({ selectedId, offset, children }) {
   const ref = useRef(null);
   const t = useRef(0);
@@ -411,7 +411,7 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
 
       {/* —— CPU IHS: rests on socket under cooler; slides out toward the viewer when selected —— */}
       <group position={cpuTarget}>
-        <CpuEmergesFromCooler selectedId={selectedId} offset={[0.05, 0.11, 0.36]}>
+        <CpuEmergesFromCooler selectedId={selectedId} offset={[0.025, 0.055, 0.18]}>
           <mesh
             castShadow
             receiveShadow

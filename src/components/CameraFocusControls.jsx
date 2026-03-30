@@ -5,10 +5,9 @@ import * as THREE from "three";
 import { DEFAULT_CAMERA, getCameraForPart } from "../data/cameraFocus.js";
 
 /**
- * Orbit controls with smooth camera + target interpolation when `selectedId` changes.
- * While tweening, controls are disabled so drei's internal `update()` does not run — that
- * `update()` rebuilds the camera from spherical coords and clamps polar/distance, which
- * fights `position.lerp` and can prevent convergence (felt as a "locked" view on CPU/RAM).
+ * Orbit controls with smooth camera + target interpolation when a **part** is selected.
+ * Tween always starts from the current pose (no fly-back when selection is cleared).
+ * While tweening, controls are disabled so drei's `update()` does not fight the lerp.
  */
 export function CameraFocusControls({ selectedId }) {
   const controlsRef = useRef(null);
@@ -26,16 +25,26 @@ export function CameraFocusControls({ selectedId }) {
 
   useEffect(() => {
     const ctrl = controlsRef.current;
-    if (selectedId === "fans") {
+    if (!ctrl) return;
+
+    /* No “rest” tween: clearing selection leaves the camera where it is. */
+    if (selectedId == null) {
       animating.current = false;
-      if (ctrl) ctrl.enabled = true;
+      ctrl.enabled = true;
       return;
     }
+
+    if (selectedId === "fans") {
+      animating.current = false;
+      ctrl.enabled = true;
+      return;
+    }
+
     const cfg = getCameraForPart(selectedId);
     goalTarget.current.set(cfg.target[0], cfg.target[1], cfg.target[2]);
     goalPosition.current.set(cfg.position[0], cfg.position[1], cfg.position[2]);
     animating.current = true;
-    if (ctrl) ctrl.enabled = false;
+    ctrl.enabled = false;
   }, [selectedId]);
 
   useFrame((_, delta) => {
