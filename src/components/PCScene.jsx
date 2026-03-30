@@ -5,7 +5,7 @@ import { DEFAULT_CAMERA } from "../data/cameraFocus.js";
 import { PCModel } from "./PCModel";
 import { CameraFocusControls } from "./CameraFocusControls.jsx";
 
-export function PCScene({ selectedId, hoveredId, onSelect, onHover }) {
+export function PCScene({ selectedId, hoveredId, onSelect, onHover, sidebarFocusNonce }) {
   return (
     <Canvas
       shadows
@@ -50,7 +50,7 @@ export function PCScene({ selectedId, hoveredId, onSelect, onHover }) {
         <Environment preset="city" environmentIntensity={0.42} />
       </Suspense>
 
-      <CameraFocusControls />
+      <CameraFocusControls selectedId={selectedId} sidebarFocusNonce={sidebarFocusNonce} />
     </Canvas>
   );
 }

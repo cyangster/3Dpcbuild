@@ -5,6 +5,8 @@ import { PC_PARTS, PART_IDS } from "./data/pcParts.js";
 export default function App() {
   const [selectedId, setSelectedId] = useState(null);
   const [hoveredId, setHoveredId] = useState(null);
+  /** Bumps only on sidebar list clicks so the camera frames the part; 3D picks do not bump. */
+  const [sidebarFocusNonce, setSidebarFocusNonce] = useState(0);
 
   const onSelect = useCallback((id) => {
     setSelectedId(id);
@@ -36,6 +38,7 @@ export default function App() {
             hoveredId={hoveredId}
             onSelect={onSelect}
             onHover={onHover}
+            sidebarFocusNonce={sidebarFocusNonce}
           />
         </section>
 
@@ -52,7 +55,10 @@ export default function App() {
                     <button
                       type="button"
                       className={`part-btn${active ? " part-btn--active" : ""}${hover && !active ? " part-btn--hover" : ""}`}
-                      onClick={() => setSelectedId(id)}
+                      onClick={() => {
+                        setSelectedId(id);
+                        setSidebarFocusNonce((n) => n + 1);
+                      }}
                       onPointerEnter={() => setHoveredId(id)}
                       onPointerLeave={() => setHoveredId(null)}
                     >
@@ -83,7 +89,7 @@ export default function App() {
               </div>
             ) : (
               <p className="details-placeholder">
-                Pick a component from the list to highlight it and read what it does.
+                Pick a component from the list to frame it and read what it does.
               </p>
             )}
           </div>

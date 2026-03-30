@@ -3,7 +3,6 @@ import { useFrame } from "@react-three/fiber";
 import { RoundedBox } from "@react-three/drei";
 import { ClickablePart } from "./ClickablePart";
 import { ClickableRoundedBox } from "./ClickableRoundedBox";
-import { PartArrow } from "./PartArrow";
 import { HOVER, SELECTION } from "../theme/selectionHighlight.js";
 
 function NoRaycastGroup({ children }) {
@@ -136,7 +135,7 @@ function GpuFanVisual({ position, scale = 1, emphasis = "idle" }) {
 export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
   const common = { selectedId, hoveredId, onSelect, onHover };
 
-  /* Arrow targets + part positions (inside model group, before root y = -0.15). */
+  /* Part anchors (inside model group, before root y = -0.15). */
   const cpuTarget = [-0.068, 0.612, -0.148];
   const storageTarget = [0.13, 0.48, -0.176];
   const psuTarget = [0, 0.146, -0.12];
@@ -703,16 +702,6 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
           <meshStandardMaterial {...fansRingMat} />
         </mesh>
       </NoRaycastGroup>
-
-      <PartArrow
-        partId="cpu"
-        position={[0.26, 0.52, 0.12]}
-        lookAt={cpuTarget}
-        selectedId={selectedId}
-        hoveredId={hoveredId}
-        onSelect={onSelect}
-        onHover={onHover}
-      />
     </group>
   );
 }
