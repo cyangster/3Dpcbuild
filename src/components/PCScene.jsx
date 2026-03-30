@@ -1,7 +1,8 @@
 import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Environment, ContactShadows } from "@react-three/drei";
+import { Environment, ContactShadows } from "@react-three/drei";
 import { PCModel } from "./PCModel";
+import { CameraFocusControls } from "./CameraFocusControls.jsx";
 
 export function PCScene({ selectedId, hoveredId, onSelect, onHover }) {
   return (
@@ -11,11 +12,11 @@ export function PCScene({ selectedId, hoveredId, onSelect, onHover }) {
       gl={{ antialias: true, alpha: true }}
       onPointerMissed={() => onSelect(null)}
     >
-      <color attach="background" args={["#dce3ed"]} />
-      <ambientLight intensity={0.62} />
+      <color attach="background" args={["#e8edf5"]} />
+      <ambientLight intensity={0.88} />
       <directionalLight
-        position={[3, 5, 2.5]}
-        intensity={1.35}
+        position={[3.2, 5.2, 2.8]}
+        intensity={1.65}
         castShadow
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
@@ -25,8 +26,8 @@ export function PCScene({ selectedId, hoveredId, onSelect, onHover }) {
         shadow-camera-top={2}
         shadow-camera-bottom={-2}
       />
-      <directionalLight position={[-2.5, 3, -1.5]} intensity={0.45} color="#ffffff" />
-      <hemisphereLight args={["#f0f4fc", "#c5d0e0", 0.35]} />
+      <directionalLight position={[-2.2, 3.5, -1.2]} intensity={0.65} color="#ffffff" />
+      <hemisphereLight args={["#ffffff", "#d4dce8", 0.55]} />
 
       <Suspense fallback={null}>
         <PCModel
@@ -38,26 +39,17 @@ export function PCScene({ selectedId, hoveredId, onSelect, onHover }) {
 
         <ContactShadows
           position={[0, -0.55, 0]}
-          opacity={0.32}
+          opacity={0.24}
           scale={12}
           blur={2.4}
           far={4}
-          color="#1e293b"
+          color="#64748b"
         />
 
-        <Environment preset="city" environmentIntensity={0.28} />
+        <Environment preset="city" environmentIntensity={0.42} />
       </Suspense>
 
-      <OrbitControls
-        enablePan={false}
-        enableDamping
-        dampingFactor={0.08}
-        minPolarAngle={0.06}
-        maxPolarAngle={Math.PI - 0.06}
-        minDistance={1.05}
-        maxDistance={4.25}
-        target={[0, 0.45, 0]}
-      />
+      <CameraFocusControls selectedId={selectedId} />
     </Canvas>
   );
 }

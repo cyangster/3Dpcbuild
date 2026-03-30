@@ -1,7 +1,6 @@
 import { useState, useCallback } from "react";
 import { PCScene } from "./components/PCScene.jsx";
-import { DetailOverlay } from "./components/DetailOverlay.jsx";
-import { PC_PARTS } from "./data/pcParts.js";
+import { PC_PARTS, PART_IDS } from "./data/pcParts.js";
 
 export default function App() {
   const [selectedId, setSelectedId] = useState(null);
@@ -15,10 +14,6 @@ export default function App() {
     setHoveredId(id);
   }, []);
 
-  const onCloseDetail = useCallback(() => {
-    setSelectedId(null);
-  }, []);
-
   const selected = selectedId ? PC_PARTS[selectedId] : null;
 
   return (
@@ -27,11 +22,8 @@ export default function App() {
         <div className="header-inner">
           <h1 className="title">Interactive 3D PC</h1>
           <p className="subtitle">
-            The build stays centered — drag to look around it like a display model. Tap any part
-            to learn what it does.{" "}
-            <span className="subtitle-hint">
-              Red arrows mark pieces that are hidden or hard to tap (CPU, SSD, PSU).
-            </span>
+            Choose a part in the list to fly the camera to it and open details. You can still drag
+            to orbit and pinch to zoom. Tap the model or use red arrows for hidden parts.
           </p>
         </div>
       </header>
@@ -45,9 +37,57 @@ export default function App() {
             onHover={onHover}
           />
         </section>
-      </main>
 
-      <DetailOverlay part={selected} onClose={onCloseDetail} />
+        <aside className="sidebar" aria-label="Parts and details">
+          <div className="panel parts-list">
+            <h2 className="panel-title">All parts</h2>
+            <ul className="part-buttons">
+              {PART_IDS.map((id) => {
+                const part = PC_PARTS[id];
+                const active = selectedId === id;
+                const hover = hoveredId === id;
+                return (
+                  <li key={id}>
+                    <button
+                      type="button"
+                      className={`part-btn${active ? " part-btn--active" : ""}${hover && !active ? " part-btn--hover" : ""}`}
+                      onClick={() => setSelectedId(id)}
+                      onPointerEnter={() => setHoveredId(id)}
+                      onPointerLeave={() => setHoveredId(null)}
+                    >
+                      <span className="part-btn-label">{part.label}</span>
+                      <span className="part-btn-short">{part.short}</span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+
+          <div className="panel details">
+            <h2 className="panel-title">Details</h2>
+            {selected ? (
+              <div className="details-content">
+                <h3 className="details-heading">{selected.label}</h3>
+                <p className="details-desc">{selected.description}</p>
+                <h4 className="details-specs-title">Key points</h4>
+                <ul className="details-specs">
+                  {selected.specs.map((line, i) => (
+                    <li key={i}>{line}</li>
+                  ))}
+                </ul>
+                <button type="button" className="clear-btn" onClick={() => setSelectedId(null)}>
+                  Clear selection
+                </button>
+              </div>
+            ) : (
+              <p className="details-placeholder">
+                Pick a component from the list to move the view to that part and read what it does.
+              </p>
+            )}
+          </div>
+        </aside>
+      </main>
 
       <footer className="footer">
         <span>Built with React, Vite, and React Three Fiber — deploys on Vercel as a static site.</span>

@@ -22,16 +22,16 @@ function CaseFanVisual({ position, scale = 1 }) {
     <group position={position} scale={scale}>
       <mesh castShadow>
         <torusGeometry args={[0.05, 0.007, 10, 40]} />
-        <meshStandardMaterial color="#3d4450" metalness={0.7} roughness={0.32} />
+        <meshStandardMaterial color="#5c6b7e" metalness={0.45} roughness={0.42} />
       </mesh>
       <mesh position={[0, 0, 0.004]}>
         <cylinderGeometry args={[0.024, 0.024, 0.016, 24]} />
-        <meshStandardMaterial color="#1a2332" metalness={0.4} roughness={0.5} />
+        <meshStandardMaterial color="#3d4a5c" metalness={0.35} roughness={0.48} />
       </mesh>
       {[0, 1, 2, 3].map((i) => (
         <mesh key={i} rotation={[0, 0, (i * Math.PI) / 2]} position={[0, 0, 0.003]} castShadow>
           <boxGeometry args={[0.092, 0.022, 0.016]} />
-          <meshStandardMaterial color="#252d3a" metalness={0.3} roughness={0.62} />
+          <meshStandardMaterial color="#4a5a6e" metalness={0.25} roughness={0.55} />
         </mesh>
       ))}
     </group>
@@ -44,16 +44,16 @@ function GpuFanVisual({ position, scale = 1 }) {
     <group position={position} scale={scale}>
       <mesh castShadow>
         <torusGeometry args={[0.038, 0.0055, 8, 32]} />
-        <meshStandardMaterial color="#2a3140" metalness={0.75} roughness={0.3} />
+        <meshStandardMaterial color="#4a5668" metalness={0.5} roughness={0.38} />
       </mesh>
       <mesh position={[0, 0, 0.003]}>
         <cylinderGeometry args={[0.018, 0.018, 0.012, 20]} />
-        <meshStandardMaterial color="#111820" metalness={0.5} roughness={0.45} />
+        <meshStandardMaterial color="#2d3848" metalness={0.4} roughness={0.48} />
       </mesh>
       {[0, 1, 2, 3].map((i) => (
         <mesh key={i} rotation={[0, 0, (i * Math.PI) / 2]} position={[0, 0, 0.002]} castShadow>
           <boxGeometry args={[0.072, 0.018, 0.012]} />
-          <meshStandardMaterial color="#1e2633" metalness={0.35} roughness={0.6} />
+          <meshStandardMaterial color="#3d4d60" metalness={0.28} roughness={0.52} />
         </mesh>
       ))}
     </group>
@@ -81,25 +81,25 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
         radius={0.032}
         smoothness={5}
         position={[0, 0.54, 0]}
-        color="#1a2332"
-        metalness={0.88}
-        roughness={0.18}
+        color="#4a5d78"
+        metalness={0.42}
+        roughness={0.38}
         transparent
-        opacity={0.26}
+        opacity={0.34}
         {...common}
       />
 
       <NoRaycastGroup>
         <mesh position={[0, 0.018, 0.248]} castShadow receiveShadow>
           <boxGeometry args={[0.5, 0.035, 0.065]} />
-          <meshStandardMaterial color="#2c3545" metalness={0.55} roughness={0.42} />
+          <meshStandardMaterial color="#5a6a80" metalness={0.4} roughness={0.48} />
         </mesh>
         <RoundedBox args={[0.5, 0.028, 0.06]} radius={0.012} position={[0, 1.074, 0.248]} castShadow receiveShadow>
-          <meshStandardMaterial color="#2c3545" metalness={0.55} roughness={0.4} />
+          <meshStandardMaterial color="#5a6a80" metalness={0.4} roughness={0.46} />
         </RoundedBox>
         <mesh position={[0, 0.54, 0.252]} castShadow>
           <boxGeometry args={[0.12, 0.55, 0.008]} />
-          <meshStandardMaterial color="#252e3d" metalness={0.5} roughness={0.45} />
+          <meshStandardMaterial color="#5c6d85" metalness={0.38} roughness={0.5} />
         </mesh>
       </NoRaycastGroup>
 
@@ -109,9 +109,9 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
         args={[0.41, 0.84, 0.02]}
         radius={0.008}
         position={[0, 0.52, -0.202]}
-        color="#0f3d24"
-        metalness={0.2}
-        roughness={0.88}
+        color="#1f6b45"
+        metalness={0.15}
+        roughness={0.82}
         {...common}
       />
 
@@ -119,22 +119,22 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
         {[0, 1, 2].map((i) => (
           <mesh key={i} position={[0.06 + i * 0.045, 0.38, -0.191]} castShadow>
             <boxGeometry args={[0.036, 0.008, 0.006]} />
-            <meshStandardMaterial color="#0a0f14" metalness={0.15} roughness={0.9} />
+            <meshStandardMaterial color="#1e293b" metalness={0.12} roughness={0.85} />
           </mesh>
         ))}
         <RoundedBox args={[0.07, 0.045, 0.028]} radius={0.006} position={[-0.12, 0.72, -0.186]} castShadow>
-          <meshStandardMaterial color="#4a5568" metalness={0.65} roughness={0.38} />
+          <meshStandardMaterial color="#6b7588" metalness={0.5} roughness={0.42} />
         </RoundedBox>
         <mesh position={[-0.04, 0.55, -0.19]}>
           <boxGeometry args={[0.055, 0.055, 0.012]} />
-          <meshStandardMaterial color="#1c2433" metalness={0.3} roughness={0.75} />
+          <meshStandardMaterial color="#3d4d63" metalness={0.25} roughness={0.68} />
         </mesh>
       </NoRaycastGroup>
 
       {/* —— CPU (under cooler — visual only) —— */}
       <mesh position={cpuTarget} rotation={[Math.PI / 2, 0, 0]} castShadow receiveShadow>
         <cylinderGeometry args={[0.021, 0.021, 0.011, 28]} />
-        <meshStandardMaterial color="#c8cdd6" metalness={0.92} roughness={0.22} />
+        <meshStandardMaterial color="#e2e8f0" metalness={0.75} roughness={0.28} />
       </mesh>
 
       {/* —— Tower CPU cooler (visual) + invisible hit box —— */}
@@ -154,7 +154,7 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
         {Array.from({ length: 22 }, (_, i) => (
           <mesh key={i} position={[-0.152 + i * 0.0088, 0.706, -0.174]} castShadow>
             <boxGeometry args={[0.004, 0.132, 0.105]} />
-            <meshStandardMaterial color="#5a626e" metalness={0.45} roughness={0.48} />
+            <meshStandardMaterial color="#8a94a4" metalness={0.35} roughness={0.52} />
           </mesh>
         ))}
         {[
@@ -170,11 +170,11 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
             castShadow
           >
             <cylinderGeometry args={[0.0075, 0.0075, 0.12, 10]} />
-            <meshStandardMaterial color="#aeb6c4" metalness={0.88} roughness={0.22} />
+            <meshStandardMaterial color="#d8dee8" metalness={0.65} roughness={0.32} />
           </mesh>
         ))}
         <RoundedBox args={[0.055, 0.055, 0.038]} radius={0.012} position={[-0.068, 0.618, -0.184]} castShadow>
-          <meshStandardMaterial color="#3d4452" metalness={0.55} roughness={0.42} />
+          <meshStandardMaterial color="#5a6578" metalness={0.45} roughness={0.48} />
         </RoundedBox>
         <CaseFanVisual position={[0.058, 0.702, -0.168]} scale={0.58} />
       </NoRaycastGroup>
@@ -190,9 +190,9 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
             args={[0.034, 0.34, 0.054]}
             radius={0.005}
             position={[0, 0, 0]}
-            color="#1a222e"
-            metalness={0.5}
-            roughness={0.48}
+            color="#3d4d63"
+            metalness={0.4}
+            roughness={0.5}
             {...common}
           />
           <NoRaycastGroup>
@@ -202,7 +202,7 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
             </mesh>
             <mesh position={[0, 0.1, 0.029]}>
               <boxGeometry args={[0.028, 0.12, 0.008]} />
-              <meshStandardMaterial color="#2d3748" metalness={0.55} roughness={0.4} />
+              <meshStandardMaterial color="#4a5568" metalness={0.42} roughness={0.45} />
             </mesh>
           </NoRaycastGroup>
         </group>
@@ -224,7 +224,7 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
       <NoRaycastGroup>
         <mesh position={[0, 0.42, -0.075]} castShadow receiveShadow>
           <boxGeometry args={[0.32, 0.1, 0.012]} />
-          <meshStandardMaterial color="#0f141c" metalness={0.6} roughness={0.4} />
+          <meshStandardMaterial color="#2d3a4d" metalness={0.45} roughness={0.45} />
         </mesh>
         <RoundedBox
           args={[0.34, 0.118, 0.198]}
@@ -234,16 +234,16 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
           castShadow
           receiveShadow
         >
-          <meshStandardMaterial color="#1c2436" metalness={0.65} roughness={0.32} />
+          <meshStandardMaterial color="#3d4f68" metalness={0.5} roughness={0.38} />
         </RoundedBox>
         <mesh position={[0, 0.448, 0.138]} castShadow>
           <boxGeometry args={[0.28, 0.028, 0.014]} />
           <meshStandardMaterial
-            color={selectedId === "gpu" || hoveredId === "gpu" ? "#60a5fa" : "#2563eb"}
-            emissive="#172554"
-            emissiveIntensity={selectedId === "gpu" ? 0.45 : hoveredId === "gpu" ? 0.3 : 0.22}
-            metalness={0.4}
-            roughness={0.35}
+            color={selectedId === "gpu" || hoveredId === "gpu" ? "#7dd3fc" : "#3b82f6"}
+            emissive="#1e3a5f"
+            emissiveIntensity={selectedId === "gpu" ? 0.5 : hoveredId === "gpu" ? 0.35 : 0.28}
+            metalness={0.35}
+            roughness={0.4}
           />
         </mesh>
         <GpuFanVisual position={[-0.1, 0.42, 0.132]} scale={0.92} />
@@ -255,11 +255,11 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
       <NoRaycastGroup>
         <group position={storageTarget} rotation={[0.12, 0, 0]}>
           <RoundedBox args={[0.095, 0.014, 0.024]} radius={0.003} castShadow>
-            <meshStandardMaterial color="#1e293b" metalness={0.72} roughness={0.32} />
+            <meshStandardMaterial color="#475569" metalness={0.5} roughness={0.4} />
           </RoundedBox>
           <mesh position={[0.02, 0.012, 0]}>
             <boxGeometry args={[0.018, 0.012, 0.022]} />
-            <meshStandardMaterial color="#0f172a" metalness={0.2} roughness={0.85} />
+            <meshStandardMaterial color="#334155" metalness={0.18} roughness={0.78} />
           </mesh>
         </group>
       </NoRaycastGroup>
@@ -270,9 +270,9 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
         args={[0.37, 0.118, 0.245]}
         radius={0.018}
         position={psuTarget}
-        color="#141820"
-        metalness={0.55}
-        roughness={0.52}
+        color="#3d4a5c"
+        metalness={0.42}
+        roughness={0.5}
         {...common}
       />
 
@@ -280,12 +280,12 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
         {Array.from({ length: 6 }, (_, i) => (
           <mesh key={i} position={[0, 0.12 + i * 0.018, psuTarget[2] + 0.121]}>
             <boxGeometry args={[0.28, 0.008, 0.006]} />
-            <meshStandardMaterial color="#0d1218" metalness={0.4} roughness={0.65} />
+            <meshStandardMaterial color="#3d4858" metalness={0.32} roughness={0.58} />
           </mesh>
         ))}
         <mesh position={[0, psuTarget[1], psuTarget[2] - 0.125]} castShadow>
           <boxGeometry args={[0.32, 0.09, 0.02]} />
-          <meshStandardMaterial color="#1a222d" metalness={0.45} roughness={0.55} />
+          <meshStandardMaterial color="#4a5568" metalness={0.38} roughness={0.52} />
         </mesh>
       </NoRaycastGroup>
 
@@ -304,7 +304,7 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
 
       <NoRaycastGroup>
         <RoundedBox args={[0.42, 0.38, 0.022]} radius={0.014} position={[0, 0.74, 0.218]} castShadow>
-          <meshStandardMaterial color="#222a38" metalness={0.55} roughness={0.45} />
+          <meshStandardMaterial color="#5a6a80" metalness={0.42} roughness={0.48} />
         </RoundedBox>
         <CaseFanVisual position={[-0.115, 0.74, 0.242]} scale={1} />
         <CaseFanVisual position={[0.115, 0.74, 0.242]} scale={1} />
@@ -313,15 +313,15 @@ export function PCModel({ selectedId, hoveredId, onSelect, onHover }) {
       <NoRaycastGroup>
         <mesh position={[0, 0.74, 0.255]}>
           <ringGeometry args={[0.085, 0.098, 32]} />
-          <meshStandardMaterial color="#1e2633" metalness={0.4} roughness={0.55} side={2} />
+          <meshStandardMaterial color="#5a6a7e" metalness={0.32} roughness={0.52} side={2} />
         </mesh>
         <mesh position={[-0.115, 0.74, 0.255]} rotation={[0, 0, 0.25]}>
           <ringGeometry args={[0.085, 0.098, 32]} />
-          <meshStandardMaterial color="#1e2633" metalness={0.4} roughness={0.55} side={2} />
+          <meshStandardMaterial color="#5a6a7e" metalness={0.32} roughness={0.52} side={2} />
         </mesh>
         <mesh position={[0.115, 0.74, 0.255]} rotation={[0, 0, -0.2]}>
           <ringGeometry args={[0.085, 0.098, 32]} />
-          <meshStandardMaterial color="#1e2633" metalness={0.4} roughness={0.55} side={2} />
+          <meshStandardMaterial color="#5a6a7e" metalness={0.32} roughness={0.52} side={2} />
         </mesh>
       </NoRaycastGroup>
 
